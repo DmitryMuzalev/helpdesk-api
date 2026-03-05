@@ -1,10 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
-  //url= env("DATABASE_URL")
-} 
+}
 
-
-/* ENUMS */
+/* ================= ENUMS ================= */
 
 enum Role {
   ADMIN
@@ -27,7 +29,8 @@ enum Priority {
   CRITICAL
 }
 
-/* ENUMS */
+/* ================= USER ================= */
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -36,12 +39,12 @@ model User {
   role      Role
 
 
-  institutionId String?
-  institution   Institution? @relation("InstitutionUsers", fields: [institutionId], references: [id])
+  institutionId String? @unique
+  institution   Institution? @relation(fields: [institutionId], references: [id])
 
   institutions Institution[] @relation("EngineerInstitutions")
-
   assignedTickets Ticket[] @relation("AssignedEngineer")
+  articles Article[]
 
   isActive  Boolean  @default(true)
 
@@ -49,8 +52,8 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+/* ================= INSTITUTION ================= */
 
-/* INSTITUTION */
 model Institution {
   id      String @id @default(uuid())
   name    String
@@ -60,16 +63,16 @@ model Institution {
   engineerId String
   engineer   User @relation("EngineerInstitutions", fields: [engineerId], references: [id])
 
-  users User[] @relation("InstitutionUsers")
-
   tickets Ticket[]
 
-  isActive Boolean @default(true)
+  account User?
 
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
 }
 
-/* TICKET */
+/* ================= TICKET ================= */
+
 model Ticket {
   id      String @id @default(uuid())
   number  Int    @unique @default(autoincrement())
@@ -91,23 +94,29 @@ model Ticket {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   closedAt  DateTime?
+
+  @@index([status])
+  @@index([assignedEngineerId])
 }
 
+/* ================= ARTICLE ================= */
 
-
-/* ARTICLE */
 model Article {
   id String @id @default(uuid())
 
   ticketId String
   ticket   Ticket @relation(fields: [ticketId], references: [id])
 
-  authorId String
- // author   User @relation(fields: [authorId], references: [id])
+  authorId String?
+  author   User? @relation(fields: [authorId], references: [id])
+
+  externalAuthorName String?
 
   body String
 
   internal Boolean @default(false)
 
   createdAt DateTime @default(now())
+
+  @@index([ticketId])
 }
