@@ -58,7 +58,7 @@ model Institution {
   id      String @id @default(uuid())
   name    String
   address String
-  email   String
+  email   String @unique
 
   engineerId String
   engineer   User @relation("EngineerInstitutions", fields: [engineerId], references: [id])
@@ -69,6 +69,7 @@ model Institution {
 
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 /* ================= TICKET ================= */
