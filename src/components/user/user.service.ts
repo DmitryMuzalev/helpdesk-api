@@ -22,7 +22,10 @@ const isRole = (role: unknown): role is Role =>
 
 export const userService = {
   async getAll() {
-    return prisma.user.findMany({ select: userPublicSelect });
+    return await prisma.user.findMany({
+      select: userPublicSelect,
+      where: { isActive: true },
+    });
   },
 
   async getById(id: string) {

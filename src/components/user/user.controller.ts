@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { userService } from './user.service';
-import { CreateUserDto, UpdateUserDto } from './user.types';
 import { HttpError } from '@/common/errors';
+import { userService } from './user.service';
+import { Request, Response } from 'express';
+import { CreateUserDto, UpdateUserDto } from './user.types';
 
 const handleError = (res: Response, error: unknown) => {
   if (error instanceof HttpError) {
